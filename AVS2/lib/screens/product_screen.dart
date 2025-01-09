@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/product.dart';
 
-class ProductScreen extends StatelessWidget {
+class ProductScreen extends StatefulWidget {
   final String shopName;
   final List<Product> cart;
   final Function(List<Product>, int) updateCart;
@@ -13,6 +13,14 @@ class ProductScreen extends StatelessWidget {
     required this.updateCart,
     required this.balance,
   });
+
+  @override
+  _ProductScreenState createState() => _ProductScreenState();
+}
+
+class _ProductScreenState extends State<ProductScreen> {
+  late int _balance;
+  late List<Product> _cart;
 
   final Map<String, List<Product>> shopProducts = {
     'Toy Shop': [
@@ -32,19 +40,44 @@ class ProductScreen extends StatelessWidget {
     ],
   };
 
+  @override
+  void initState() {
+    super.initState();
+    _balance = widget.balance;
+    _cart = List.from(widget.cart);
+  }
+
+  void _addToCart(Product product) {
+    if (_balance >= product.price) {
+      setState(() {
+        _cart.add(product);
+        _balance -= product.price;
+      });
+      widget.updateCart(_cart, _balance);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${product.name} added to cart')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Insufficient balance')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final products = shopProducts[shopName] ?? [];
+    final products = shopProducts[widget.shopName] ?? [];
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(shopName),
+        title: Text(widget.shopName),
       ),
       body: ListView.builder(
         itemCount: products.length,
         itemBuilder: (context, index) {
           final product = products[index];
+          final isAffordable = _balance >= product.price;
+
           return Card(
             margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
             elevation: 4,
@@ -65,28 +98,16 @@ class ProductScreen extends StatelessWidget {
               ),
               subtitle: Text('Price: Rs. ${product.price}'),
               trailing: ElevatedButton(
-                onPressed: () {
-                  if (balance >= product.price) {
-                    cart.add(product);
-                    updateCart(cart, balance - product.price);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('${product.name} added to cart')),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Insufficient balance')),
-                    );
-                  }
-                },
+                onPressed: isAffordable ? () => _addToCart(product) : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: balance >= product.price ? Colors.green : Colors.red,
+                  backgroundColor: isAffordable ? Colors.green : Colors.red,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                 ),
                 child: Text(
-                  balance >= product.price ? 'Add to Cart' : 'Not Enough',
+                  isAffordable ? 'Add to Cart' : 'Not Enough',
                   style: const TextStyle(color: Colors.white),
                 ),
               ),

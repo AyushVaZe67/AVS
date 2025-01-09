@@ -4,8 +4,13 @@ import '../models/product.dart';
 class ProfileScreen extends StatefulWidget {
   final List<Product> cart;
   final int balance;
+  final Function(List<Product>, int) updateCartAndBalance;
 
-  ProfileScreen({required this.cart, required this.balance});
+  ProfileScreen({
+    required this.cart,
+    required this.balance,
+    required this.updateCartAndBalance,
+  });
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -26,6 +31,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       _balance += _cart[index].price; // Add the product price back to the balance
       _cart.removeAt(index); // Remove the item from the cart
+
+      // Notify HomeScreen about the updated cart and balance
+      widget.updateCartAndBalance(_cart, _balance);
     });
   }
 
@@ -64,6 +72,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     vertical: 8.0,
                   ),
                   child: ListTile(
+                    leading: Image.asset(
+                      _cart[index].imageAsset,
+                      fit: BoxFit.cover,
+                      width: 50,
+                      height: 50,
+                    ),
                     title: Text(_cart[index].name),
                     subtitle: Text('Price: Rs. ${_cart[index].price}'),
                     trailing: IconButton(

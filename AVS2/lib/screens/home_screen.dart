@@ -3,6 +3,8 @@ import '../models/product.dart';
 import 'product_screen.dart';
 import 'profile_screen.dart';
 import '../widgets/shop_item.dart';
+import 'package:bytemind1/screens/profile_screen.dart';
+
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -10,14 +12,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _balance = 100;
+  int _balance = 1000;
   List<Product> _cart = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Shopping App'),
+        title: const Text('Shopping App'),
         actions: [
           IconButton(
             icon: const Icon(Icons.account_circle),
@@ -25,7 +27,11 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ProfileScreen(cart: _cart, balance: _balance),
+                  builder: (context) => ProfileScreen(
+                    cart: _cart,
+                    balance: _balance,
+                    updateCartAndBalance: _updateCartAndBalance,
+                  ),
                 ),
               );
             },
@@ -72,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         builder: (context) => ProductScreen(
                           shopName: 'Toy Shop',
                           cart: _cart,
-                          updateCart: _updateCart,
+                          updateCart: _updateCartAndBalance,
                           balance: _balance,
                         ),
                       ),
@@ -89,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         builder: (context) => ProductScreen(
                           shopName: 'Food Shop',
                           cart: _cart,
-                          updateCart: _updateCart,
+                          updateCart: _updateCartAndBalance,
                           balance: _balance,
                         ),
                       ),
@@ -106,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         builder: (context) => ProductScreen(
                           shopName: 'Clothes Shop',
                           cart: _cart,
-                          updateCart: _updateCart,
+                          updateCart: _updateCartAndBalance,
                           balance: _balance,
                         ),
                       ),
@@ -121,8 +127,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Update cart and balance when a product is added
-  void _updateCart(List<Product> updatedCart, int newBalance) {
+  // Update cart and balance when a product is added/removed
+  void _updateCartAndBalance(List<Product> updatedCart, int newBalance) {
     setState(() {
       _cart = updatedCart;
       _balance = newBalance;
