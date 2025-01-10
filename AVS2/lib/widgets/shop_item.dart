@@ -32,7 +32,7 @@ class ShopItem extends StatelessWidget {
                 ),
                 child: Image.asset(
                   imageAsset,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                   width: double.infinity,
                 ),
               ),
