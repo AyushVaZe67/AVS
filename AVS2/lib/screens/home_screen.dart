@@ -10,86 +10,124 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Audio player for background music
+  bool _isPlaying = false; // To track whether audio is playing
 
-  final player = AudioPlayer();
+  int _balance = 300; // Initial balance
+  int _totalAmountSpent = 0; // Total amount spent
+  List<Product> _cart = []; // List to store selected products
 
-  int _balance = 300;
-  List<Product> _cart = [];
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this); // Add observer for app lifecycle events
+    _playAudio(); // Start playing audio when the app opens
+  }
+
+  Future<void> _playAudio() async {
+    try {
+      await _audioPlayer.setSourceAsset('audio/main_music.mp3'); // Set the source for the local file
+      await _audioPlayer.setReleaseMode(ReleaseMode.loop); // Set the audio to loop
+      await _audioPlayer.resume(); // Resume playing
+      setState(() {
+        _isPlaying = true;
+      });
+    } catch (e) {
+      print("Error playing audio: $e");
+    }
+  }
+
+  Future<void> _stopAudio() async {
+    try {
+      await _audioPlayer.stop(); // Stop the audio
+      setState(() {
+        _isPlaying = false;
+      });
+    } catch (e) {
+      print("Error stopping audio: $e");
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
+      // Stop audio when app is minimized or closed
+      _stopAudio();
+    } else if (state == AppLifecycleState.resumed) {
+      // Resume audio when app is reopened
+      _playAudio();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          playSound();
+        onPressed: () async {
+          if (_isPlaying) {
+            await _stopAudio(); // Stop audio
+          } else {
+            await _playAudio(); // Play audio
+          }
         },
+        backgroundColor: Colors.blue, // Toggle background music
+        child: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
       ),
       appBar: AppBar(
-        title: Row(
+        title: const Row(
           children: [
             Icon(
-              Icons.star, // Fun icon for the fair
-              color: Colors.yellowAccent, // Bright color to contrast with blue
+              Icons.star,
+              color: Colors.yellowAccent,
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Text(
               'जत्रा',
-              style: const TextStyle(
-                fontFamily: 'Cursive', // Custom playful font style
+              style: TextStyle(
+                fontFamily: 'Cursive',
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.white, // Title text in white for contrast
+                color: Colors.white,
               ),
             ),
           ],
         ),
-        backgroundColor: Colors.blue, // Matching the Scaffold background color
-        elevation: 6, // Slight elevation to give depth
+        backgroundColor: Colors.blue,
+        elevation: 6,
         actions: [
           IconButton(
             icon: Icon(
               Icons.account_circle,
-              color: Colors.white, // White icon for contrast
-              size: 28, // Larger icon size for prominence
+              color: Colors.white,
+              size: 28,
             ),
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => ProfileScreen(
-                    cart: _cart,
-                    balance: _balance,
+                    initialBalance: _balance,
+                    cart: _cart, // Pass the cart items
                     updateCartAndBalance: _updateCartAndBalance,
                   ),
                 ),
               );
             },
           ),
-          IconButton(
-            icon: Icon(
-              Icons.settings, // Add settings for more functionality
-              color: Colors.white,
-              size: 28,
-            ),
-            onPressed: () {
-              // Settings action here
-            },
-          ),
         ],
       ),
-
-
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/fair_bg.jpg'), // Background image
-            fit: BoxFit.cover, // Cover the entire screen
+            image: AssetImage('assets/images/fair_bg.jpg'),
+            fit: BoxFit.cover,
           ),
         ),
         child: Column(
           children: [
-            // Displaying Balance at the Top Center
+            // Displaying the balance at the top
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Center(
@@ -110,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            // Title for Shops
+            // Title for the fair
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 16.0),
               child: Text(
@@ -122,8 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-
-            // Grid of Shops
+            // Grid of shop items
             Expanded(
               child: GridView.count(
                 crossAxisCount: 2,
@@ -190,16 +227,19 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Update cart and balance when a product is added/removed
+  // Update cart and balance when a product is added or removed
   void _updateCartAndBalance(List<Product> updatedCart, int newBalance) {
     setState(() {
-      _cart = updatedCart;
-      _balance = newBalance;
+      _totalAmountSpent += _balance - newBalance; // Calculate total spent
+      _balance = newBalance < 0 ? 0 : newBalance; // Ensure balance is not negative
+      _cart = updatedCart; // Update cart
     });
   }
 
-  Future<void> playSound() async {
-    String audioPath = "assets/audio/main_music.mp3";
-    await player.play(AssetSource(audioPath));
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this); // Remove observer to prevent memory leaks
+    _audioPlayer.dispose(); // Dispose audio player to free resources
+    super.dispose();
   }
 }

@@ -1,4 +1,6 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart'; // Import the Fluttertoast package
 import 'package:lottie/lottie.dart'; // Import the Lottie package
 import '../models/product.dart';
 
@@ -31,6 +33,8 @@ class _ProductScreenState extends State<ProductScreen> with TickerProviderStateM
 
   int? _purchasingProductIndex;
 
+  final AudioPlayer _player = AudioPlayer();
+
   final Map<String, List<Product>> shopProducts = {
     'Toy Shop': [
       Product(name: 'कार', price: 30, imageAsset: 'assets/animations/car.json'),
@@ -55,22 +59,29 @@ class _ProductScreenState extends State<ProductScreen> with TickerProviderStateM
     _balance = widget.balance;
     _cart = List.from(widget.cart);
 
-    // Initialize the product animation controller
+    // Initialize the product animation controller with bounce effect
     _productAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 100),
+      duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    _productScaleAnimation = Tween<double>(begin: 1.0, end:1 ).animate(
-      CurvedAnimation(parent: _productAnimationController, curve: Curves.easeInOut),
+    _productScaleAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
+      CurvedAnimation(
+        parent: _productAnimationController,
+        curve: Curves.elasticOut,
+      ),
     );
 
-    // Initialize the coin animation controller
+    // Initialize the coin animation controller with pulsing effect
     _coinAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 100),
+      duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    _coinScaleAnimation = Tween<double>(begin: 1.0, end: 1).animate(
-        CurvedAnimation(parent: _coinAnimationController, curve: Curves.linear));
+    _coinScaleAnimation = Tween<double>(begin: 1.0, end: 1.5).animate(
+      CurvedAnimation(
+        parent: _coinAnimationController,
+        curve: Curves.easeInOut,
+      ),
+    );
   }
 
   @override
@@ -78,16 +89,37 @@ class _ProductScreenState extends State<ProductScreen> with TickerProviderStateM
     _productAnimationController.dispose();
     _coinAnimationController.dispose();
     super.dispose();
+    _player.dispose();
+  }
+
+  void _showToast(String message, Color backgroundColor) {
+    Fluttertoast.cancel(); // Cancel any existing toast immediately
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT, // Short duration for quick feedback
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: backgroundColor,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
   }
 
   Future<void> _addToCart(Product product, int index) async {
     if (_balance >= product.price) {
+      _showToast('🎉 Woohoo! ${product.name} added to your cart! 🛒', Colors.green);
+
+      await _player.setSourceAsset('audio/pop.mp3'); // Set the source for the local file
+      await _player.setReleaseMode(ReleaseMode.release); // Set the audio to loop
+      await _player.resume(); // Resume playing
+
+
       setState(() {
         _purchasingProductIndex = index;
       });
 
-      await _productAnimationController.forward(); // Animate the product
-      await _productAnimationController.reverse(); // Reset the animation for the next item
+      _productAnimationController.forward();
+      await Future.delayed(const Duration(milliseconds: 300));
+      _productAnimationController.reverse();
 
       setState(() {
         _cart.add(product);
@@ -95,19 +127,15 @@ class _ProductScreenState extends State<ProductScreen> with TickerProviderStateM
         _purchasingProductIndex = null;
       });
 
-      // Trigger the coin animation
-      await _coinAnimationController.forward();
-      await _coinAnimationController.reverse();
+      _coinAnimationController.forward();
+      await Future.delayed(const Duration(milliseconds: 300));
+      _coinAnimationController.reverse();
 
       widget.updateCart(_cart, _balance);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${product.name} added to cart')),
-      );
+
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Insufficient balance')),
-      );
+      _showToast('🚫 Oops! Not enough coins for ${product.name} 💰', Colors.red);
     }
   }
 
@@ -115,7 +143,6 @@ class _ProductScreenState extends State<ProductScreen> with TickerProviderStateM
     final isAnimating = index == _purchasingProductIndex;
 
     if (asset.endsWith('.json')) {
-      // Lottie animation
       return AnimatedBuilder(
         animation: _productScaleAnimation,
         builder: (context, child) {
@@ -131,7 +158,6 @@ class _ProductScreenState extends State<ProductScreen> with TickerProviderStateM
         },
       );
     } else {
-      // Static image
       return AnimatedBuilder(
         animation: _productScaleAnimation,
         builder: (context, child) {
@@ -161,13 +187,12 @@ class _ProductScreenState extends State<ProductScreen> with TickerProviderStateM
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/wooden_bg.jpg'), // Background image
-            fit: BoxFit.cover, // Cover the entire screen
+            image: AssetImage('assets/images/wooden_bg.jpg'),
+            fit: BoxFit.cover,
           ),
         ),
         child: Column(
           children: [
-            // Balance Display with Coin Icon
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Container(
@@ -304,8 +329,8 @@ class _ProductScreenState extends State<ProductScreen> with TickerProviderStateM
                                       const SizedBox(width: 6),
                                       Text(
                                         'Rs. ${product.price}',
-                                        style: TextStyle(
-                                          color: isAffordable ? Colors.white : Colors.black38,
+                                        style: const TextStyle(
+                                          color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16,
                                         ),
