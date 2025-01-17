@@ -10,7 +10,7 @@ class CareerExplorerApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Career Explorer',
+      title: 'करिअर एक्सप्लोरर',
       theme: ThemeData(primarySwatch: Colors.purple),
       home: HomeScreen(),
     );

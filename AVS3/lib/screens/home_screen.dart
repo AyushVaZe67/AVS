@@ -1,83 +1,114 @@
 import 'package:flutter/material.dart';
-import 'package:bytemind2/screens/skill_assessment_screen.dart';
+import 'skill_assessment_screen.dart';
 
 class HomeScreen extends StatelessWidget {
+  final List<Map<String, dynamic>> categories = [
+    {
+      'name': 'Sports',
+      'icon': Icons.sports,
+      'color': Colors.orangeAccent,
+    },
+    {
+      'name': 'Maths',
+      'icon': Icons.calculate,
+      'color': Colors.greenAccent,
+    },
+    {
+      'name': 'Artist',
+      'icon': Icons.brush,
+      'color': Colors.pinkAccent,
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Career Explorer',
-          style: TextStyle(fontFamily: 'Comic Sans MS', fontSize: 26),
-        ),
-        backgroundColor: Colors.orangeAccent,
+        title: Text('Select a Category'),
+        backgroundColor: Colors.deepPurple,
+        elevation: 8,
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.orange.shade200, Colors.pink.shade100],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '🎓 Explore Your Career! 🎉',
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
-                  fontFamily: 'Comic Sans MS',
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 20),
-              // Image.asset(
-              //   'assets/images/career_kids.png',
-              //   height: 150,
-              // ),
-              // SizedBox(height: 30),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurpleAccent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                  shadowColor: Colors.purple,
-                  elevation: 8,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.school, color: Colors.white, size: 24),
-                    SizedBox(width: 10),
-                    Text(
-                      'Start Skill Assessment',
-                      style: TextStyle(fontSize: 18, fontFamily: 'Comic Sans MS',color: Colors.white),
-                    ),
-                  ],
-                ),
-                onPressed: () {
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(15),
+          child: GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 20, // Increased spacing between cards for better readability
+              mainAxisSpacing: 20,
+              childAspectRatio: 1.4, // More elongated cards for a modern look
+            ),
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SkillAssessmentScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => SkillAssessmentScreen(category: categories[index]['name']),
+                    ),
                   );
                 },
-              ),
-              SizedBox(height: 20),
-              Text(
-                'Discover the right path for your future! 🌟',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontStyle: FontStyle.italic,
-                  color: Colors.black87,
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  transform: Matrix4.identity()..scale(1.05), // Slight scale effect on tap
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        categories[index]['color'].withOpacity(0.7),
+                        categories[index]['color'],
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(25), // Rounded corners for a smooth look
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.5),
+                        blurRadius: 12,
+                        offset: Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Animated Icon by using TweenAnimationBuilder
+                        TweenAnimationBuilder<double>(
+                          tween: Tween(begin: 0.8, end: 1.2),
+                          duration: Duration(milliseconds: 300),
+                          builder: (context, value, child) {
+                            return Icon(
+                              categories[index]['icon'],
+                              size: 60 * value, // Animate the size of the icon
+                              color: Colors.white,
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          categories[index]['name'],
+                          style: TextStyle(
+                            fontSize: 26, // Larger text for better visibility
+                            fontWeight: FontWeight.bold, // Bold text for emphasis
+                            color: Colors.white,
+                            shadows: [
+                              Shadow(
+                                offset: Offset(2, 2),
+                                blurRadius: 5,
+                                color: Colors.black.withOpacity(0.6),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ],
+              );
+            },
           ),
         ),
       ),
