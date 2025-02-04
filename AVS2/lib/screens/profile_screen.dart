@@ -48,9 +48,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _removeFromCart(int index) async {
-
-    await _audioPlayer.setSourceAsset('audio/pop.mp3'); // Set the source for the local file
-    await _audioPlayer.setReleaseMode(ReleaseMode.release); // Set the audio to loop
+    await _audioPlayer
+        .setSourceAsset('audio/pop.mp3'); // Set the source for the local file
+    await _audioPlayer
+        .setReleaseMode(ReleaseMode.release); // Set the audio to loop
     await _audioPlayer.resume(); // Resume playing
 
     setState(() {
@@ -134,8 +135,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               borderRadius: BorderRadius.circular(20),
               gradient: LinearGradient(
                 colors: isGoodChoice
-                    ? [Colors.lightGreen.shade100, Colors.green.shade300]
-                    : [Colors.red.shade100, Colors.redAccent.shade200],
+                    ? [
+                        Colors.lightGreen.shade100,
+                        Colors.green.shade300,
+                      ]
+                    : [
+                        Colors.red.shade100,
+                        Colors.redAccent.shade200,
+                      ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -241,164 +248,173 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Balance display
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.monetization_on,
-                    color: Colors.amber, size: 30),
-                const SizedBox(width: 8),
-                Text(
-                  'शिल्लक: रु. $_balance',
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                    fontFamily: 'Comic Sans MS',
-                  ),
-                ),
-              ],
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/pro_bg.jpg'),
+            fit: BoxFit.cover, // Ensures the image covers the entire container
           ),
-          Expanded(
-            child: _cart.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.shopping_cart,
-                            size: 100, color: Colors.grey),
-                        const SizedBox(height: 10),
-                        const Text(
-                          'Your cart is empty!',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.blueAccent,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Comic Sans MS',
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          'पुढे जा, काही उत्कृष्ट आयटम जोडा!',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.green,
-                            fontFamily: 'Comic Sans MS',
-                          ),
-                        ),
-                      ],
+        ),
+
+        child: Column(
+          children: [
+            // Balance display
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.monetization_on,
+                      color: Colors.amber, size: 30),
+                  const SizedBox(width: 8),
+                  Text(
+                    'शिल्लक: रु. $_balance',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                      fontFamily: 'Comic Sans MS',
                     ),
-                  )
-                : ListView.builder(
-                    itemCount: _cart.length,
-                    itemBuilder: (context, index) {
-                      final product = _cart[index];
-                      return Card(
-                        color: Colors.pink.shade50,
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 12.0,
-                          vertical: 8.0,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                          side: BorderSide(color: Colors.greenAccent, width: 2),
-                        ),
-                        child: ListTile(
-                          leading: product.imageAsset.endsWith('.json')
-                              ? Lottie.asset(
-                                  product.imageAsset,
-                                  width: 50,
-                                  height: 50,
-                                  fit: BoxFit.contain,
-                                )
-                              : Image.asset(
-                                  product.imageAsset,
-                                  width: 50,
-                                  height: 50,
-                                  fit: BoxFit.cover,
-                                ),
-                          title: Text(
-                            product.name,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              color: Colors.black,
-                              fontFamily: 'Comic Sans MS',
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: _cart.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.shopping_cart,
+                              size: 100, color: Colors.grey),
+                          const SizedBox(height: 10),
+                          const Text(
+                            'Your cart is empty!',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.blueAccent,
                               fontWeight: FontWeight.bold,
+                              fontFamily: 'Comic Sans MS',
                             ),
                           ),
-                          subtitle: Row(
-                            children: [
-                              const Icon(Icons.monetization_on,
-                                  color: Colors.amber, size: 16),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${product.price}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black,
-                                  fontFamily: 'Comic Sans MS',
-                                ),
+                          SizedBox(height: 10),
+                          Text(
+                            'पुढे जा, काही उत्कृष्ट आयटम जोडा!',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.green,
+                              fontFamily: 'Comic Sans MS',
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: _cart.length,
+                      itemBuilder: (context, index) {
+                        final product = _cart[index];
+                        return Card(
+                          color: Colors.pink.shade50,
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 12.0,
+                            vertical: 8.0,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            side: BorderSide(color: Colors.greenAccent, width: 2),
+                          ),
+                          child: ListTile(
+                            leading: product.imageAsset.endsWith('.json')
+                                ? Lottie.asset(
+                                    product.imageAsset,
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.contain,
+                                  )
+                                : Image.asset(
+                                    product.imageAsset,
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.cover,
+                                  ),
+                            title: Text(
+                              product.name,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                color: Colors.black,
+                                fontFamily: 'Comic Sans MS',
+                                fontWeight: FontWeight.bold,
                               ),
-                            ],
+                            ),
+                            subtitle: Row(
+                              children: [
+                                const Icon(Icons.monetization_on,
+                                    color: Colors.amber, size: 16),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '${product.price}',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                    fontFamily: 'Comic Sans MS',
+                                  ),
+                                ),
+                              ],
+                            ),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => _removeFromCart(index),
+                            ),
                           ),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => _removeFromCart(index),
-                          ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
+            ),
+            // Total Spent display
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.shopping_bag, color: Colors.blue, size: 30),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Total Spent: Rs. $_totalSpent',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blueAccent,
+                      fontFamily: 'Comic Sans MS',
+                    ),
                   ),
-          ),
-          // Total Spent display
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.shopping_bag, color: Colors.blue, size: 30),
-                const SizedBox(width: 8),
-                Text(
-                  'Total Spent: Rs. $_totalSpent',
-                  style: const TextStyle(
-                    fontSize: 22,
+                ],
+              ),
+            ),
+            // Submit Button
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
+              child: ElevatedButton(
+                onPressed: _evaluatePurchases,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: const Text(
+                  'Submit',
+                  style: TextStyle(
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.blueAccent,
                     fontFamily: 'Comic Sans MS',
                   ),
                 ),
-              ],
-            ),
-          ),
-          // Submit Button
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            child: ElevatedButton(
-              onPressed: _evaluatePurchases,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              child: const Text(
-                'Submit',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Comic Sans MS',
-                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

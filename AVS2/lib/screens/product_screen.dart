@@ -21,7 +21,8 @@ class ProductScreen extends StatefulWidget {
   _ProductScreenState createState() => _ProductScreenState();
 }
 
-class _ProductScreenState extends State<ProductScreen> with TickerProviderStateMixin {
+class _ProductScreenState extends State<ProductScreen>
+    with TickerProviderStateMixin {
   late int _balance;
   late List<Product> _cart;
 
@@ -37,21 +38,88 @@ class _ProductScreenState extends State<ProductScreen> with TickerProviderStateM
 
   final Map<String, List<Product>> shopProducts = {
     'Toy Shop': [
-      Product(name: 'कार', price: 30, imageAsset: 'assets/animations/car.json'),
-      Product(name: 'बाहुली', price: 50, imageAsset: 'assets/images/p4_doll.png'),
-      Product(name: 'बिल्डिंग ब्लॉक्स', price: 20, imageAsset: 'assets/images/p6_blocks.png'),
+      Product(
+        name: 'कार',
+        price: 30,
+        imageAsset: 'assets/animations/car.json',
+        url: '', // No URL for Toy Shop products
+      ),
+      Product(
+        name: 'बाहुली',
+        price: 50,
+        imageAsset: 'assets/gifs/barbie1.gif',
+        url: '',
+      ),
+      Product(
+        name: 'बिल्डिंग ब्लॉक्स',
+        price: 20,
+        imageAsset: 'assets/gifs/bblock1.gif',
+        url: '',
+      ),
+    ],
+    'Books Shop': [
+      Product(
+        name: 'अग्निपंख',
+        price: 30,
+        imageAsset: 'assets/images/book1.jpg',
+        url: 'https://www.flipkart.com/agnipankh',
+      ),
+      Product(
+        name: 'चाणक्य नीती',
+        price: 50,
+        imageAsset: 'assets/images/book2.jpg',
+        url: 'https://www.flipkart.com/chanakya-niti',
+      ),
+      Product(
+        name: 'महाभारत',
+        price: 20,
+        imageAsset: 'assets/images/book3.png',
+        url: 'https://www.flipkart.com/mahabharat',
+      ),
     ],
     'Food Shop': [
-      Product(name: 'केळी', price: 20, imageAsset: 'assets/images/p7_banana.png'),
-      Product(name: 'पिझ्झा', price: 40, imageAsset: 'assets/images/p8_pizza.png'),
-      Product(name: 'रस', price: 15, imageAsset: 'assets/images/p9_juice.png'),
+      Product(
+        name: 'केळी',
+        price: 20,
+        imageAsset: 'assets/images/p7_banana.png',
+        url: '',
+      ),
+      Product(
+        name: 'पिझ्झा',
+        price: 40,
+        imageAsset: 'assets/images/p8_pizza.png',
+        url: '',
+      ),
+      Product(
+        name: 'रस',
+        price: 15,
+        imageAsset: 'assets/images/p9_juice.png',
+        url: '',
+      ),
     ],
     'Clothes Shop': [
-      Product(name: 'शर्ट', price: 50, imageAsset: 'assets/images/p10_shirt.png'),
-      Product(name: 'पँट', price: 60, imageAsset: 'assets/images/p11_cap.png'),
-      Product(name: 'जाकीट', price: 80, imageAsset: 'assets/images/p12_kurta.png'),
+      Product(
+        name: 'शर्ट',
+        price: 50,
+        imageAsset: 'assets/images/p10_shirt.png',
+        url: '',
+      ),
+      Product(
+        name: 'पँट',
+        price: 60,
+        imageAsset: 'assets/images/p11_cap.png',
+        url: '',
+      ),
+      Product(
+        name: 'जाकीट',
+        price: 80,
+        imageAsset: 'assets/images/p12_kurta.png',
+        url: '',
+      ),
     ],
   };
+
+
 
   @override
   void initState() {
@@ -106,12 +174,14 @@ class _ProductScreenState extends State<ProductScreen> with TickerProviderStateM
 
   Future<void> _addToCart(Product product, int index) async {
     if (_balance >= product.price) {
-      _showToast('🎉 Woohoo! ${product.name} added to your cart! 🛒', Colors.green);
+      _showToast(
+          '🎉 Woohoo! ${product.name} added to your cart! 🛒', Colors.green);
 
-      await _player.setSourceAsset('audio/pop.mp3'); // Set the source for the local file
-      await _player.setReleaseMode(ReleaseMode.release); // Set the audio to loop
+      await _player
+          .setSourceAsset('audio/pop.mp3'); // Set the source for the local file
+      await _player
+          .setReleaseMode(ReleaseMode.release); // Set the audio to loop
       await _player.resume(); // Resume playing
-
 
       setState(() {
         _purchasingProductIndex = index;
@@ -132,10 +202,9 @@ class _ProductScreenState extends State<ProductScreen> with TickerProviderStateM
       _coinAnimationController.reverse();
 
       widget.updateCart(_cart, _balance);
-
-
     } else {
-      _showToast('🚫 Oops! Not enough coins for ${product.name} 💰', Colors.red);
+      _showToast(
+          '🚫 Oops! Not enough coins for ${product.name} 💰', Colors.red);
     }
   }
 
@@ -215,7 +284,8 @@ class _ProductScreenState extends State<ProductScreen> with TickerProviderStateM
                     width: 2,
                   ),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -245,7 +315,6 @@ class _ProductScreenState extends State<ProductScreen> with TickerProviderStateM
                 ),
               ),
             ),
-
             Expanded(
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -298,8 +367,12 @@ class _ProductScreenState extends State<ProductScreen> with TickerProviderStateM
                             children: [
                               Expanded(
                                 child: ClipRRect(
-                                  borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                                  child: _buildImage(product.imageAsset, index),
+                                  borderRadius: const BorderRadius.vertical(
+                                      top: Radius.circular(20)),
+                                  child: _buildImage(
+                                    product.imageAsset,
+                                    index,
+                                  ),
                                 ),
                               ),
                               Padding(
@@ -315,17 +388,23 @@ class _ProductScreenState extends State<ProductScreen> with TickerProviderStateM
                                 ),
                               ),
                               GestureDetector(
-                                onTap: isAffordable ? () => _addToCart(product, index) : null,
+                                onTap: isAffordable
+                                    ? () => _addToCart(product, index)
+                                    : null,
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 12),
                                   decoration: BoxDecoration(
-                                    color: isAffordable ? Colors.blue : Colors.grey,
+                                    color: isAffordable
+                                        ? Colors.blue
+                                        : Colors.grey,
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const Icon(Icons.monetization_on, color: Colors.yellow, size: 22),
+                                      const Icon(Icons.monetization_on,
+                                          color: Colors.yellow, size: 22),
                                       const SizedBox(width: 6),
                                       Text(
                                         'Rs. ${product.price}',

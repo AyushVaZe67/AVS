@@ -98,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         elevation: 6,
         actions: [
           IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.account_circle,
               color: Colors.white,
               size: 28,
@@ -119,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         ],
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/images/fair_bg.jpg'),
             fit: BoxFit.cover,
@@ -210,6 +210,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         MaterialPageRoute(
                           builder: (context) => ProductScreen(
                             shopName: 'Clothes Shop',
+                            cart: _cart,
+                            updateCart: _updateCartAndBalance,
+                            balance: _balance,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  ShopItem(
+                    shopName: 'Books दुकान',
+                    imageAsset: 'assets/images/main_books.png',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProductScreen(
+                            shopName: 'Books Shop',
                             cart: _cart,
                             updateCart: _updateCartAndBalance,
                             balance: _balance,
